@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SQL Comparison Operators — Practice</title>
+<style>
+:root{--bg:#0f1117;--card:#181c25;--card2:#202633;--text:#f4f5f7;--muted:#aeb5c2;--accent:#d66aa3;--green:#53d18a;--red:#ff6b6b;--border:#303746}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0f1117,#17121a);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:850px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.brand{font-weight:800;font-size:20px}.pill{background:#2a1b27;color:#f2b5d3;padding:7px 11px;border-radius:999px;font-size:12px}
+h1{font-size:30px;margin:24px 0 6px}.sub{color:var(--muted);margin:0 0 18px}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--border);padding:9px 12px;border-radius:12px;font-size:13px}
+.card{background:rgba(24,28,37,.96);border:1px solid var(--border);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 10px 30px #0003}.q{color:#f0a9cd;font-weight:700;font-size:13px}.scenario{font-size:18px;line-height:1.45;margin:8px 0 14px}.schema{background:#0b0d12;border:1px solid #282e39;border-radius:12px;padding:12px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d9dee7;white-space:pre-wrap}
+textarea{width:100%;min-height:150px;background:#0b0d12;color:#f5f7fa;border:1px solid #394151;border-radius:12px;padding:14px;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical;outline:none}textarea:focus{border-color:var(--accent)}
+.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:11px}button{border:0;border-radius:11px;padding:11px 16px;font-weight:700;cursor:pointer;color:#fff;background:#343b4b}button.primary{background:var(--accent)}button.success{background:#23784e}button:disabled{opacity:.45;cursor:not-allowed}
+.feedback{margin-top:12px;padding:11px 13px;border-radius:11px;display:none}.ok{display:block;background:#123c2a;color:#8ff0bb}.bad{display:block;background:#431e25;color:#ffb2b2}.hint{display:none;margin-top:10px;color:#f0d99c;background:#322b19;padding:10px;border-radius:10px}
+.footer{text-align:center;color:#7f8795;font-size:12px;padding:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">SQL Practice Lab</div><div class="pill">Comparison Operators</div></div>
+  <h1>WHERE + Comparison Operators</h1>
+  <p class="sub">Interview-style and real-scenario MySQL practice. Write the query, submit it, or skip to the next question.</p>
+  <div class="stats">
+    <div class="stat">Question <b id="num">1</b>/<span id="total"></span></div>
+    <div class="stat">Correct: <b id="score">0</b></div>
+    <div class="stat">Skipped: <b id="skipped">0</b></div>
+  </div>
+  <div class="card">
+    <div class="q" id="type"></div>
+    <div class="scenario" id="question"></div>
+    <div class="schema" id="schema"></div>
+    <p style="color:#aeb5c2;font-size:13px;margin-bottom:7px">Write your MySQL answer:</p>
+    <textarea id="answer" spellcheck="false" placeholder="SELECT ... WHERE ...;"></textarea>
+    <div class="row">
+      <button class="primary" onclick="submitAnswer()">Submit Answer</button>
+      <button onclick="hint()">💡 Hint</button>
+      <button onclick="skip()">Skip →</button>
+    </div>
+    <div id="hint" class="hint"></div>
+    <div id="feedback" class="feedback"></div>
+  </div>
+  <div class="footer">Practice first. Check solutions only after attempting the questions. 🔥</div>
+</div>
+<script>
+const qs=[
+{t:"REAL SCENARIO",q:"A company wants employees whose salary is greater than ₹50,000. Write a query to return all such employees.",s:"Employees(id, name, department, salary)",a:["select * from employees where salary > 50000"],h:"Use the salary column with the > operator."},
+{t:"INTERVIEW",q:"Find products whose price is less than ₹1,000.",s:"Products(product_id, product_name, category, price)",a:["select * from products where price < 1000"],h:"Compare price with 1000 using <."},
+{t:"REAL SCENARIO",q:"Find students who scored at least 60 marks.",s:"Students(student_id, name, course, marks)",a:["select * from students where marks >= 60"],h:"'At least' means greater than or equal to."},
+{t:"INTERVIEW",q:"Find customers whose age is exactly 25.",s:"Customers(customer_id, name, city, age)",a:["select * from customers where age = 25"],h:"Use = for an exact match."},
+{t:"REAL SCENARIO",q:"Find orders whose total amount is not ₹2,000.",s:"Orders(order_id, customer_id, order_date, total_amount)",a:["select * from orders where total_amount <> 2000","select * from orders where total_amount != 2000"],h:"Use <> for not equal (MySQL also accepts !=)."},
+{t:"INTERVIEW",q:"Find employees whose salary is between ₹30,000 and ₹50,000, including both boundaries. Use comparison operators.",s:"Employees(id, name, department, salary)",a:["select * from employees where salary >= 30000 and salary <= 50000"],h:"Combine >= 30000 and <= 50000 with AND."},
+{t:"REAL SCENARIO",q:"Find products with a stock quantity of 10 or fewer.",s:"Products(product_id, product_name, price, stock_quantity)",a:["select * from products where stock_quantity <= 10"],h:"'10 or fewer' means <= 10."},
+{t:"INTERVIEW",q:"Find employees who are younger than 30.",s:"Employees(id, name, age, salary)",a:["select * from employees where age < 30"],h:"Younger than means <."},
+{t:"REAL SCENARIO",q:"Find students who did not score exactly 40 marks.",s:"Students(id, name, marks)",a:["select * from students where marks <> 40","select * from students where marks != 40"],h:"Use the not-equal comparison operator."},
+{t:"INTERVIEW",q:"Find employees whose experience is 5 years or more.",s:"Employees(id, name, experience_years, salary)",a:["select * from employees where experience_years >= 5"],h:"'Or more' means >=."}
+];
+let i=0,score=0,skipped=0,answered=false;
+document.getElementById("total").textContent=qs.length;
+function norm(x){return x.toLowerCase().replace(/--.*$/gm,"").replace(/\s+/g," ").trim().replace(/;$/,"")}
+function load(){
+ const q=qs[i]; document.getElementById("num").textContent=i+1;document.getElementById("type").textContent=q.t;
+ document.getElementById("question").textContent=q.q;document.getElementById("schema").textContent=q.s;
+ document.getElementById("answer").value="";document.getElementById("feedback").className="feedback";document.getElementById("feedback").textContent="";
+ document.getElementById("hint").style.display="none";document.getElementById("hint").textContent=q.h;answered=false;
+}
+function submitAnswer(){
+ if(answered)return;
+ const val=norm(document.getElementById("answer").value), ok=qs[i].a.map(norm).includes(val);
+ const f=document.getElementById("feedback");
+ if(!val){f.className="feedback bad";f.textContent="⚠️ Write a query first.";return}
+ if(ok){answered=true;score++;document.getElementById("score").textContent=score;f.className="feedback ok";f.textContent="✅ Correct! Great job. Moving to the next question…";setTimeout(next,850)}
+ else{f.className="feedback bad";f.textContent="❌ Not quite. Check your operator and WHERE condition, then try again."}
+}
+function hint(){const h=document.getElementById("hint");h.style.display=h.style.display==="block"?"none":"block"}
+function skip(){skipped++;document.getElementById("skipped").textContent=skipped;next()}
+function next(){if(i<qs.length-1){i++;load()}else{document.querySelector(".card").innerHTML='<div style="text-align:center"><h2>🎉 Practice Complete!</h2><p style="color:#aeb5c2">You completed all questions.</p><p><b>'+score+'</b> correct • <b>'+skipped+'</b> skipped</p><button class="primary" onclick="location.reload()">Practice Again</button></div>'}}
+load();
+</script>
+</body>
+</html>
